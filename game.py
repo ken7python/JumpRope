@@ -3,6 +3,7 @@ import sys
 
 import cv2
 import mediapipe as mp
+import pygame.mixer
 
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose()
@@ -41,6 +42,8 @@ def IsJump(landmarks):
             return False
 
 pygame.init()
+pygame.mixer.init()
+pygame.mixer.music.load("res/jump.mp3")
 
 # Screen dimensions
 WIDTH, HEIGHT = 800, 600
@@ -98,8 +101,9 @@ while running and cap.isOpened():
         j = IsJump(results.pose_landmarks.landmark)
 
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_SPACE] or j and not jumping:
+    if (keys[pygame.K_SPACE] or j) and not jumping:
         jumping = True
+        pygame.mixer.music.play(1)
         jump_progress = 0
 
     if jumping:
@@ -107,6 +111,7 @@ while running and cap.isOpened():
         if jump_progress >= jump_height * 2:
             jumping = False
             jump_count += 1
+            
         else:
             scale_factor = 1 + (jump_height - abs(jump_height - jump_progress)) / jump_height
             player_width = int(50 * scale_factor)
@@ -134,7 +139,7 @@ while running and cap.isOpened():
         text = font.render("Game Over", True, BLACK)
         screen.blit(text, (WIDTH // 2 - text.get_width() // 2, HEIGHT // 2 - text.get_height() // 2))
         pygame.display.flip()
-        pygame.time.wait(5000)
+        pygame.time.wait(3000)
         running = False
 
     # Drawing
