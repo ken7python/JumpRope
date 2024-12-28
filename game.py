@@ -134,7 +134,7 @@ while running and cap.isOpened():
         text = font.render("Game Over", True, BLACK)
         screen.blit(text, (WIDTH // 2 - text.get_width() // 2, HEIGHT // 2 - text.get_height() // 2))
         pygame.display.flip()
-        pygame.time.wait(2000)
+        pygame.time.wait(5000)
         running = False
 
     # Drawing
@@ -144,7 +144,7 @@ while running and cap.isOpened():
     pygame.draw.line(screen, BLACK, (0, rope_y), (WIDTH, rope_y), 5)
 
     # Display jump count
-    font = pygame.font.Font(None, 36)
+    font = pygame.font.Font(None, 108)
     jump_count_text = font.render(f"Jumps: {jump_count}", True, BLACK)
     screen.blit(jump_count_text, (10, 10))
 
