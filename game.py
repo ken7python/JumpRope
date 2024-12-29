@@ -83,7 +83,7 @@ def main():
     # ゲームループの前にカウントダウンを追加
     i = 3
     while i > 0:
-        countdown_font = pygame.font.Font(None, 108)
+        countdown_font = pygame.font.Font(None, 216)
         screen.fill(WHITE)
         countdown_text = countdown_font.render(str(i), True, BLACK)
         screen.blit(countdown_text, (WIDTH // 2 - countdown_text.get_width() // 2, HEIGHT // 2 - countdown_text.get_height() // 2))
