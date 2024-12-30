@@ -1,3 +1,12 @@
+import json
+def read_gamedata():
+    gamedata = json.load(open("gamedata.json", "r"))
+    return gamedata
+def write_highscore(score):
+    gamedata = read_gamedata()
+    if (gamedata["highscore"]<score):
+        gamedata["highscore"] = score
+        json.dump(gamedata, open("gamedata.json", "w"), indent=4)
 import pygame
 import sys
 
@@ -6,6 +15,10 @@ import mediapipe as mp
 import pygame.mixer
 
 def main():
+    gamedata = read_gamedata()
+    highscore = gamedata["highscore"]
+    print("highscore:", highscore)
+
     mp_pose = mp.solutions.pose
     pose = mp_pose.Pose()
     mp_drawing = mp.solutions.drawing_utils
@@ -82,6 +95,8 @@ def main():
 
     # ゲームループの前にカウントダウンを追加
     i = 3
+    count_color = "BLACK"
+    update_highscore = False
     while i > 0:
         countdown_font = pygame.font.Font(None, 216)
         screen.fill(WHITE)
@@ -154,7 +169,10 @@ def main():
         
         if not jumping and player_y + player_height // 2 > rope_y and player_y - player_height // 2 < rope_y:
             font = pygame.font.Font(None, 74)
-            text = font.render("Game Over", True, BLACK)
+            if update_highscore:
+                text = font.render("High score updated!", True, "BLUE")
+            else:
+                text = font.render("Game Over", True, BLACK)
             screen.blit(text, (WIDTH // 2 - text.get_width() // 2, HEIGHT // 2 - text.get_height() // 2))
             retry_text = font.render("Press SPACE to retry", True, BLACK)
             screen.blit(retry_text, (WIDTH // 2 - retry_text.get_width() // 2, HEIGHT // 2 + text.get_height()))
@@ -179,9 +197,19 @@ def main():
         pygame.draw.line(screen, BLACK, (0, rope_y), (WIDTH, rope_y), 5)
 
         # Display jump count
-        font = pygame.font.Font(None, 108)
-        jump_count_text = font.render(f"Jumps: {jump_count}", True, BLACK)
+        font = pygame.font.Font(None, 96)
+        
+        if jump_count > highscore:
+            update_highscore = True
+            count_color = "RED"
+            highscore = jump_count
+            write_highscore(highscore)
+            
+        jump_count_text = font.render(f"Jumps: {jump_count}", True, count_color)
         screen.blit(jump_count_text, (10, 10))
+
+        highscore_text = font.render(f"HighScore: {highscore}", True, BLACK)
+        screen.blit(highscore_text, (10, 80))
 
         pygame.display.flip()
         clock.tick(30)
